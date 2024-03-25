@@ -1,7 +1,7 @@
 name: Build, Upload and Commit Release
 
 on:
-  workflow_dispatch:  # This enables manual trigger from GitHub UI or API
+  workflow_dispatch:
 
 jobs:
   build-upload-commit:
@@ -9,17 +9,22 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        fetch-depth: 0  # Fetches all history for .Git commands
-        token: ${{ secrets.GITHUB_TOKEN }}  # Use the built-in GITHUB_TOKEN for operations
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
 
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install setuptools wheel build twine
+      # This ensures setuptools, wheel, build, and twine are installed
+
     - name: Build wheels and source distribution
       run: |
-        python -m pip install --upgrade build twine
         python setup.py bdist_wheel
         python setup.py sdist
         twine check dist/*
@@ -38,14 +43,4 @@ jobs:
         git add -u
         VERSION=$(python setup.py --version)
         git commit -m "Release v${VERSION}. [skip ci]"
-        git tag v${VERSION}
-        echo "A commit and tag for this release has been made. When you're ready run:"
-        echo "    git push; sleep 60; git push --tags"
-        shell: bash
-
-    - name: Push changes
-      run: |
-        git push
-        sleep 60
-        git push --tags
-
+        git tag v
