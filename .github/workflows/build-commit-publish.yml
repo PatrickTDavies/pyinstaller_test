@@ -1,9 +1,7 @@
 name: Build, Upload and Commit Release
 
 on:
-  push:
-    branches:
-      - main  # or your default branch
+  workflow_dispatch:  # This enables manual trigger from GitHub UI or API
 
 jobs:
   build-upload-commit:
@@ -43,11 +41,11 @@ jobs:
         git tag v${VERSION}
         echo "A commit and tag for this release has been made. When you're ready run:"
         echo "    git push; sleep 60; git push --tags"
-        echo "Note that the dumb delay is required to avoid hitting readthedocs's concurrent build limit."
-      shell: bash
+        shell: bash
 
     - name: Push changes
       run: |
         git push
         sleep 60
         git push --tags
+
