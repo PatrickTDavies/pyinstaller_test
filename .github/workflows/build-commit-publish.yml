@@ -35,12 +35,19 @@ jobs:
       run: |
         echo "API tokens can be created at https://pypi.org/manage/account/token/"
         python -m twine upload -u __token__ -p $PYPI_API_TOKEN dist/*
-
+    
     - name: Commit Release
       run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
-        git add -u
-        VERSION=$(python setup.py --version)
-        git commit -m "Release v${VERSION}. [skip ci]"
-        git tag v
+        # Check if there are any changes. If there are, proceed with commit and tag.
+        if ! git diff --quiet; then
+          git add -A
+          VERSION=$(python setup.py --version)
+          git commit -m "Release v${VERSION}. [skip ci]"
+          git tag v${VERSION}
+          echo "A commit and tag for this release has been made."
+        else
+          echo "No changes to commit."
+        fi
+      shell: bash
