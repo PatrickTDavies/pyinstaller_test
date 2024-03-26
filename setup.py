@@ -280,6 +280,7 @@ else:
 #--
 
 setup(
+    name='custom_fork_pyinstaller',
     setup_requires=["setuptools >= 42.0.0"],
     cmdclass={
         'build_bootloader': build_bootloader,
